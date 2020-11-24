@@ -5,11 +5,7 @@ import os
 import cv2
 import pandas as pd
 import numpy as np
-import random
-from scipy import ndarray
-import skimage as sk
-from skimage import transform
-from skimage import util
+
 
 class preprocessor():
     def __init__(self):
@@ -30,16 +26,19 @@ class preprocessor():
             cv2.imwrite("Resized/img{}.jpg".format(i), resized)
             i += 1
 
-    def csvCompiler(self, file):
+    def csvCompiler(self, dataFolder, foldername):
         '''
         Compiles the csv into the format to use for image cropping
         '''
-        table = pd.read_csv(file)
+        inputCSV = dataFolder + "/" + foldername + "/" + foldername + "_raw.csv"
+        outputCSV = dataFolder + "/" + foldername + "/" + foldername + ".csv"
+
+        table = pd.read_csv(inputCSV)
         frames = table['frame']
         filenamearr = []
 
         for i in frames:
-	        filename = 'image' + str(i) + '.jpg'
+	        filename = foldername + '_frame' + str(i) + '.jpg' #read folder name and append to start, now hardcoded as 001
 	        filenamearr.append(filename)
 
         filenames = pd.Series(filenamearr)
@@ -54,23 +53,27 @@ class preprocessor():
         allfeatures = table[arr]
         allfeatures.loc[:,'filename'] = filenames
 
-        allfeatures.to_csv('/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/features.csv')
+        allfeatures.to_csv(outputCSV)
 
-    def microXMaker(self):
+    def microXMaker(self, dataFolder, folderName):
         '''
         Does the reading from csv, takes image as input, crops and scales all images/components into respective folders
         '''
-        inputFolder = '/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/glorysmileframes'
+        CSV = dataFolder + "/" + folderName + "/" + folderName + ".csv"
+        framesFolder = dataFolder + "/" + folderName + "/" + folderName + "_frame"
+        microXoutput = dataFolder + "/" + folderName
         microX = ['leftEye', 'rightEye', 'leftBrow', 'rightBrow', 'mouth', 'nose' ]
         for directory in microX:
-            os.mkdir(directory)
+            os.mkdir(os.path.join(microXoutput,directory))
         
-        keypoints = pd.read_csv("features.csv")
+        keypoints = pd.read_csv(CSV)
         keypoints.set_index('filename', inplace=True)
         dim = (60, 60)
 
-        for filename in os.listdir(inputFolder):
-            image = cv2.imread(os.path.join(inputFolder,filename))
+        for filename in os.listdir(framesFolder):
+            if filename == ".DS_Store":
+                continue 
+            image = cv2.imread(os.path.join(framesFolder,filename))
             print(filename)
 
             if keypoints.loc[filename, " success"] == 0:
@@ -80,59 +83,46 @@ class preprocessor():
                 if microXcomponent == "leftEye":
                     beginX = keypoints.loc[filename,' x_36']
                     endX = keypoints.loc[filename,' x_39']
-                    beginY = keypoints.loc[filename,' x_38']
-                    endY = keypoints.loc[filename,' x_40']
+                    beginY = keypoints.loc[filename,' y_38']
+                    endY = keypoints.loc[filename,' y_40']
+                    # beginY = np.argmin(keypoints.loc[filename,' y_37'], keypoints.loc[filename,' y_38'])
+                    # endY = np.argmax(keypoints.loc[filename,' y_40'], keypoints.loc[filename,' y_41'])
 
                 if microXcomponent == "rightEye":
                     beginX = keypoints.loc[filename,' x_42']
                     endX = keypoints.loc[filename,' x_45']
-                    beginY = keypoints.loc[filename,' x_44']
-                    endY = keypoints.loc[filename,' x_46']
+                    beginY = keypoints.loc[filename,' y_44']
+                    endY = keypoints.loc[filename,' y_46']
 
                 if microXcomponent == "leftbrow":
                     beginX = keypoints.loc[filename,' x_17']
                     endX = keypoints.loc[filename,' x_21']
-                    beginY = keypoints.loc[filename,' x_19']
-                    endY = keypoints.loc[filename,' x_17']
+                    beginY = keypoints.loc[filename,' y_19']
+                    endY = keypoints.loc[filename,' y_17']
 
                 if microXcomponent == "rightbrow":
                     beginX = keypoints.loc[filename,' x_22']
                     endX = keypoints.loc[filename,' x_26']
-                    beginY = keypoints.loc[filename,' x_24']
-                    endY = keypoints.loc[filename,' x_26']
+                    beginY = keypoints.loc[filename,' y_24']
+                    endY = keypoints.loc[filename,' y_26']
 
                 if microXcomponent == "nose":
                     beginX = keypoints.loc[filename,' x_31']
                     endX = keypoints.loc[filename,' x_35']
-                    beginY = keypoints.loc[filename,' x_27']
-                    endY = keypoints.loc[filename,' x_33']
+                    beginY = keypoints.loc[filename,' y_27']
+                    endY = keypoints.loc[filename,' y_33']
 
                 if microXcomponent == "mouth":
                     beginX = keypoints.loc[filename,' x_48']
                     endX = keypoints.loc[filename,' x_54']
-                    beginY = keypoints.loc[filename,' x_51']
-                    endY = keypoints.loc[filename,' x_57']
+                    beginY = keypoints.loc[filename,' y_51']
+                    endY = keypoints.loc[filename,' y_57']
 
                 #TODO change the y points cos we need argmin/argmax instead
 
                 # crop and resize image
-                try:
-                    cropped_image = image[int(beginX):int(endX),int(beginY):int(endY)]
-                    resized = cv2.resize(cropped_image,dim)
-                except:
-                    continue
-                cv2.imwrite("{}/{}{}".format(microXcomponent, microXcomponent, filename), resized)
-
-# data augmentation
-    def random_rotation(image_array: ndarray):
-        # pick a random degree of rotation between 25% on the left and 25% on the right
-        random_degree = random.uniform(-25, 25)
-        return sk.transform.rotate(image_array, random_degree)
-
-    def random_noise(image_array: ndarray):
-        # add random noise to the image
-        return sk.util.random_noise(image_array)
-
-    def horizontal_flip(image_array: ndarray):
-        # horizontal flip doesn't need skimage, it's easy as flipping the image array of pixels !
-        return image_array[:, ::-1]
+                cropped_image = image[int(beginX):int(endX),int(beginY):int(endY)]
+                resized = cv2.resize(cropped_image,dim)
+                # except:
+                #     continue
+                cv2.imwrite("{}/{}/{}{}".format(microXoutput,microXcomponent, microXcomponent, filename), resized)

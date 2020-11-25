@@ -30,7 +30,7 @@ class preprocessor():
         '''
         Compiles the csv into the format to use for image cropping
         '''
-        inputCSV = dataFolder + "/" + foldername + "/" + foldername + "_raw.csv"
+        inputCSV = dataFolder + "/" + "raw_csv" + "/" + foldername + "_raw.csv"
         outputCSV = dataFolder + "/" + foldername + "/" + foldername + ".csv"
 
         table = pd.read_csv(inputCSV)
@@ -38,7 +38,7 @@ class preprocessor():
         filenamearr = []
 
         for i in frames:
-	        filename = foldername + '_frame' + str(i) + '.jpg' #read folder name and append to start, now hardcoded as 001
+	        filename = foldername + '_frame' + str(i-1) + '.jpg' 
 	        filenamearr.append(filename)
 
         filenames = pd.Series(filenamearr)
@@ -121,8 +121,9 @@ class preprocessor():
                 #TODO change the y points cos we need argmin/argmax instead
 
                 # crop and resize image
-                cropped_image = image[int(beginX):int(endX),int(beginY):int(endY)]
-                resized = cv2.resize(cropped_image,dim)
-                # except:
-                #     continue
+                try:
+                    cropped_image = image[int(beginX):int(endX),int(beginY):int(endY)]
+                    resized = cv2.resize(cropped_image,dim)
+                except:
+                    continue
                 cv2.imwrite("{}/{}/{}{}".format(microXoutput,microXcomponent, microXcomponent, filename), resized)

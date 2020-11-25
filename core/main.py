@@ -22,6 +22,8 @@ def main():
     for folderName in os.listdir(dataFolder):
         if folderName == ".DS_Store":
             continue
+        if folderName == "raw_csv":
+            continue
 
         print("---------CSV being prepared...---------")
         # csv output from autoface.ai

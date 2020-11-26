@@ -88,6 +88,8 @@ class preprocessor():
                 print(filename)
 
                 if keypoints.loc[filename, " success"] == 0:
+                    filenames.remove(filename)
+                    os.remove(dataFolder + "/" + folderName + "/" + folderName + "_frame/" + filename)
                     continue
 
     # TODO change the y points cos we need argmin/argmax instead
@@ -145,7 +147,24 @@ class preprocessor():
                         print("File may have errors")
                         try:
                             print("Duplication of previous frames in process")
-                            previous_filename = filename[0:-5] + str(int(filename[-5])-1) + ".jpg"
+                            try:
+                                # try to see if its 2 digits
+                                value = int(filename[-6:-4])
+                                try:
+                                    #try to see if its 3 digits
+                                    value = int(filename[-7:-4])
+                                    previous_filename = filename[0:-7] + str(int(value) - 1) + ".jpg"
+                                except:
+                                    value = int(filename[-6:-4])
+                                    previous_filename = filename[0:-6] + str(int(value)-1) + ".jpg"
+                                    print(previous_filename)
+                            except:
+                                value = int(filename[-5])
+                                if value == 0:
+                                    previous_filename = filename[0:-5] + str(value+1) + ".jpg"
+                                else:
+                                    previous_filename = filename[0:-5] + str(value-1) + ".jpg"
+
                             previous_file_directory = "{}/{}/{}{}".format(microXoutput,microXcomponent, microXcomponent, previous_filename)
                             shutil.copyfile(previous_file_directory, "{}/{}/{}{}".format(microXoutput,microXcomponent, microXcomponent, filename))
                             filenames.remove(filename)

@@ -72,16 +72,22 @@ class preprocessor():
                 break
         
         keypoints = pd.read_csv(CSV)
+        print(keypoints)
         keypoints.set_index('filename', inplace=True)
+        print(keypoints)
         dim = (60, 60)
         filenames = []
+        fail_counter = 0
 
         for filename in os.listdir(framesFolder):
             if filename == ".DS_Store":
                 continue 
             filenames.append(filename)
 
+        iterations = len(filenames)
+
         while len(filenames) > 0:
+            fail_counter += 1
             print(filenames)
             for filename in filenames:
                 image = cv2.imread(os.path.join(framesFolder,filename))
@@ -93,7 +99,7 @@ class preprocessor():
                     continue
 
     # TODO change the y points cos we need argmin/argmax instead
-
+        
                 for microXcomponent in microX:
                     if microXcomponent == "leftEye":
                         beginX = keypoints.loc[filename,' x_36']
@@ -170,3 +176,13 @@ class preprocessor():
                             filenames.remove(filename)
                         except:
                             continue
+            if fail_counter >  (iterations + 10): 
+                print("____________________________FAILED DATASET MOVING FOLDER____________________________")
+                original = dataFolder + "/" + folderName
+                target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/incomplete_data"
+                shutil.move(original,target)
+                break 
+
+        original = dataFolder + "/" + folderName
+        target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/completed_split"
+        shutil.move(original, target)       

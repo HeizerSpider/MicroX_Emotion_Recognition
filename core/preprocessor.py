@@ -61,7 +61,8 @@ class preprocessor():
         Does the reading from csv, takes image as input, crops and scales all images/components into respective folders
         '''
         CSV = dataFolder + "/" + folderName + "/" + folderName + ".csv"
-        framesFolder = dataFolder + "/" + folderName + "/" + folderName + "_frame"
+        frameName = folderName + "_frame"
+        framesFolder = dataFolder + "/" + folderName + "/" + frameName
         microXoutput = dataFolder + "/" + folderName
         microX = ['leftEye', 'rightEye', 'leftBrow', 'rightBrow', 'mouth', 'nose' ]
         for directory in microX:
@@ -79,12 +80,19 @@ class preprocessor():
         filenames = []
         fail_counter = 0
 
-        for filename in os.listdir(framesFolder):
-            if filename == ".DS_Store":
-                continue 
-            filenames.append(filename)
+        iterations = len(os.listdir(framesFolder)) 
 
-        iterations = len(filenames)
+        for i in range(iterations):
+            filenames.append(frameName + str(i) + ".jpg")
+
+        if iterations < 10:
+            try:
+                original = dataFolder + "/" + folderName
+                target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/incomplete_data/few_frames"
+                shutil.move(original, target)  
+            except:
+                print("Moving on to next dataset")
+            return
 
         while len(filenames) > 0:
             fail_counter += 1
@@ -94,9 +102,12 @@ class preprocessor():
                 print(filename)
 
                 if keypoints.loc[filename, " success"] == 0:
-                    filenames.remove(filename)
-                    os.remove(dataFolder + "/" + folderName + "/" + folderName + "_frame/" + filename)
-                    continue
+                    try:
+                        # filenames.remove(filename)
+                        os.remove(dataFolder + "/" + folderName + "/" + folderName + "_frame/" + filename)
+                        # continue
+                    except:
+                        print("Will have to duplicate later")
 
     # TODO change the y points cos we need argmin/argmax instead
         
@@ -176,13 +187,19 @@ class preprocessor():
                             filenames.remove(filename)
                         except:
                             continue
+
+        moving dataset to respective folders (completed / incomplete)
             if fail_counter >  (iterations + 10): 
                 print("____________________________FAILED DATASET MOVING FOLDER____________________________")
                 original = dataFolder + "/" + folderName
                 target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/incomplete_data"
                 shutil.move(original,target)
                 break 
+        
 
-        original = dataFolder + "/" + folderName
-        target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/completed_split"
-        shutil.move(original, target)       
+        try:
+            original = dataFolder + "/" + folderName
+            target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/completed_split"
+            shutil.move(original, target)       
+        except:
+            print("Moving on to next dataset")

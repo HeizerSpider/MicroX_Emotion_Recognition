@@ -80,12 +80,18 @@ class preprocessor():
         filenames = []
         fail_counter = 0
 
-        iterations = len(os.listdir(framesFolder)) 
+        numberOfFiles = len(os.listdir(framesFolder)) 
+        if ".DS_Store" in os.listdir(framesFolder):
+            numberOfFiles = numberOfFiles - 1
+        else:
+            numberOfFiles = numberOfFiles
 
-        for i in range(iterations):
-            filenames.append(frameName + str(i) + ".jpg")
+        for i in range(numberOfFiles):
+            #-1 cos of .DS_STORE
+            for j in range(6):
+                filenames.append(frameName + str(i) + ".jpg")
 
-        if iterations < 10:
+        if numberOfFiles < 10:
             try:
                 original = dataFolder + "/" + folderName
                 target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/incomplete_data/few_frames"
@@ -188,8 +194,8 @@ class preprocessor():
                         except:
                             continue
 
-        moving dataset to respective folders (completed / incomplete)
-            if fail_counter >  (iterations + 10): 
+        # moving dataset to respective folders (completed / incomplete)
+            if fail_counter >  (numberOfFiles * 6 + 10): 
                 print("____________________________FAILED DATASET MOVING FOLDER____________________________")
                 original = dataFolder + "/" + folderName
                 target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/incomplete_data"

@@ -25,6 +25,7 @@ def main():
         if folderName == "raw_csv":
             continue
 
+
         print("---------CSV being prepared...---------")
         # csv output from autoface.ai
         churn.csvCompiler(dataFolder, folderName)

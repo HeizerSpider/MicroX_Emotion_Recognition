@@ -8,6 +8,7 @@ import numpy as np
 import shutil
 
 
+
 class preprocessor():
     def __init__(self):
         super().__init__()
@@ -31,6 +32,7 @@ class preprocessor():
         '''
         Compiles the csv into the format to use for image cropping
         '''
+
         inputCSV = dataFolder + "/" + "raw_csv" + "/" + foldername + "_raw.csv"
         outputCSV = dataFolder + "/" + foldername + "/" + foldername + ".csv"
 
@@ -74,6 +76,7 @@ class preprocessor():
         
         keypoints = pd.read_csv(CSV)
         # print(keypoints)
+
         keypoints.set_index('filename', inplace=True)
         # print(keypoints)
         dim = (60, 60)
@@ -202,7 +205,7 @@ class preprocessor():
                 shutil.move(original,target)
                 break 
         
-
+        
         try:
             # if all microX folders have frames 0 - 10
             for microXcomponent in microX:

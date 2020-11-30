@@ -73,9 +73,9 @@ class preprocessor():
                 break
         
         keypoints = pd.read_csv(CSV)
-        print(keypoints)
+        # print(keypoints)
         keypoints.set_index('filename', inplace=True)
-        print(keypoints)
+        # print(keypoints)
         dim = (60, 60)
         filenames = []
         fail_counter = 0
@@ -91,21 +91,21 @@ class preprocessor():
             for j in range(6):
                 filenames.append(frameName + str(i) + ".jpg")
 
-        if numberOfFiles < 10:
-            try:
-                original = dataFolder + "/" + folderName
-                target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/incomplete_data/few_frames"
-                shutil.move(original, target)  
-            except:
-                print("Moving on to next dataset")
-            return
+        # if numberOfFiles < 10:
+        #     try:
+        #         original = dataFolder + "/" + folderName
+        #         target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/incomplete_data/few_frames"
+        #         shutil.move(original, target)  
+        #     except:
+        #         print("Moving on to next dataset")
+        #     return
 
         while len(filenames) > 0:
             fail_counter += 1
-            print(filenames)
+            # print(filenames)
             for filename in filenames:
                 image = cv2.imread(os.path.join(framesFolder,filename))
-                print(filename)
+                # print(filename)
 
                 if keypoints.loc[filename, " success"] == 0:
                     try:
@@ -180,7 +180,7 @@ class preprocessor():
                                 except:
                                     value = int(filename[-6:-4])
                                     previous_filename = filename[0:-6] + str(int(value)-1) + ".jpg"
-                                    print(previous_filename)
+                                    # print(previous_filename)
                             except:
                                 value = int(filename[-5])
                                 if value == 0:
@@ -195,7 +195,7 @@ class preprocessor():
                             continue
 
         # moving dataset to respective folders (completed / incomplete)
-            if fail_counter >  (numberOfFiles * 6 + 10): 
+            if fail_counter >  (numberOfFiles * 6 + 300): 
                 print("____________________________FAILED DATASET MOVING FOLDER____________________________")
                 original = dataFolder + "/" + folderName
                 target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/incomplete_data"
@@ -204,6 +204,22 @@ class preprocessor():
         
 
         try:
+            # if all microX folders have frames 0 - 10
+            for microXcomponent in microX:
+                neededFiles  = []
+                for i in range(10):
+                    checkFile = microXcomponent + frameName + str(i) + ".jpg"
+                    neededFiles.append(checkFile)
+                checkFolder = os.listdir(os.path.join(microXoutput,microXcomponent))
+                print(neededFiles)
+                print(checkFolder)
+                check = all(item in checkFolder for item in neededFiles)
+                print(check)
+                if check is False:
+                    print("Missing files")
+                    original = dataFolder + "/" + folderName
+                    target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/incomplete_data/few_frames"
+                    shutil.move(original, target)  
             original = dataFolder + "/" + folderName
             target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/completed_split"
             shutil.move(original, target)       

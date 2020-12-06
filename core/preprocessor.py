@@ -56,6 +56,100 @@ class preprocessor():
 
         allfeatures.to_csv(outputCSV)
 
+    def mainFrameDuplication(self, lastFrame, framesFolder, folderName):
+        try:
+            # try to see if its 2 digits
+            lastFrameValue = int(lastFrame[-6:-4])
+            try:
+                #try to see if its 3 digits
+                lastFrameValue = int(lastFrame[-7:-4])
+            except:
+                lastFrameValue = int(lastFrame[-6:-4])
+        except:
+            lastFrameValue = int(lastFrame[-5])
+        
+        # print(lastFrameValue)
+
+        filenames  = os.listdir(framesFolder)
+        neededFiles = [folderName + "_frame" + str(i) +".jpg" for i in range(lastFrameValue)]
+
+        # print(neededFiles)
+        print(len(filenames))
+
+        counter = 0
+
+        for filename in filenames:
+            if filename == ".DS_Store":
+                filenames.remove(".DS_Store")
+                continue
+            try:
+                neededFiles.remove(filename)
+                counter += 1
+            except:
+                continue
+
+        while len(neededFiles)> 0:
+            print(neededFiles)
+            for remainingFile in neededFiles:
+                try:
+                    # try to see if its 2 digits
+                    value = int(remainingFile[-6:-4])
+                    print(value)
+                    try:
+                        #try to see if its 3 digits
+                        value = int(remainingFile[-7:-4])
+                        previous_filename = remainingFile[0:-7] + str(int(value) - 1) + ".jpg"
+                        # print("value")
+                    except:
+                        value = int(remainingFile[-6:-4])
+                        previous_filename = remainingFile[0:-6] + str(int(value)-1) + ".jpg"
+                        print(value)
+                        print(previous_filename)
+                except:
+                    value = int(remainingFile[-5])
+                    if value == 0:
+                        previous_filename = remainingFile[0:-5] + str(value+1) + ".jpg"
+                    else:
+                        previous_filename = remainingFile[0:-5] + str(value-1) + ".jpg"
+
+                try:
+                    print("Trying to duplicate files", previous_filename, remainingFile)
+                    previous_file_directory = "{}/{}".format(framesFolder, previous_filename)
+                    neededFiles.remove(remainingFile)
+                    shutil.copyfile(previous_file_directory, "{}/{}".format(framesFolder, remainingFile))
+                except:
+                    print("Duplication failed")
+                    continue
+
+    def frameDuplication(self, filename, filenames, microXoutput, microXcomponent):
+        print("File may have errors")
+        try:
+            print("Duplication of previous frames in process")
+            try:
+                # try to see if its 2 digits
+                value = int(filename[-6:-4])
+                try:
+                    #try to see if its 3 digits
+                    value = int(filename[-7:-4])
+                    previous_filename = filename[0:-7] + str(int(value) - 1) + ".jpg"
+                except:
+                    value = int(filename[-6:-4])
+                    previous_filename = filename[0:-6] + str(int(value)-1) + ".jpg"
+                    # print(previous_filename)
+            except:
+                value = int(filename[-5])
+                if value == 0:
+                    previous_filename = filename[0:-5] + str(value+1) + ".jpg"
+                else:
+                    previous_filename = filename[0:-5] + str(value-1) + ".jpg"
+
+            previous_file_directory = "{}/{}/{}{}".format(microXoutput,microXcomponent, microXcomponent, previous_filename)
+            shutil.copyfile(previous_file_directory, "{}/{}/{}{}".format(microXoutput,microXcomponent, microXcomponent, filename))
+            filenames.remove(filename)
+        except:
+            return
+
+
     def microXMaker(self, dataFolder, folderName):
         '''
         Does the reading from csv, takes image as input, crops and scales all images/components into respective folders
@@ -64,7 +158,7 @@ class preprocessor():
         frameName = folderName + "_frame"
         framesFolder = dataFolder + "/" + folderName + "/" + frameName
         microXoutput = dataFolder + "/" + folderName
-        microX = ['leftEye', 'rightEye', 'leftBrow', 'rightBrow', 'mouth', 'nose' ]
+        microX = ['leftEye', 'rightEye', 'vleftBrow', 'rightBrow', 'mouth', 'nose' ]
         for directory in microX:
             try:
                 os.mkdir(os.path.join(microXoutput,directory))
@@ -73,12 +167,18 @@ class preprocessor():
                 break
         
         keypoints = pd.read_csv(CSV)
+        lastFrame = keypoints.tail(1)["filename"].iloc[0]
+        print(lastFrame)
         # print(keypoints)
         keypoints.set_index('filename', inplace=True)
         # print(keypoints)
         dim = (60, 60)
         filenames = []
         fail_counter = 0
+
+        # duplicates for frames that are missing
+        print("Checking frames")
+        self.mainFrameDuplication(lastFrame, framesFolder, folderName)
 
         numberOfFiles = len(os.listdir(framesFolder)) 
         if ".DS_Store" in os.listdir(framesFolder):
@@ -90,15 +190,6 @@ class preprocessor():
             #-1 cos of .DS_STORE
             for j in range(6):
                 filenames.append(frameName + str(i) + ".jpg")
-
-        # if numberOfFiles < 10:
-        #     try:
-        #         original = dataFolder + "/" + folderName
-        #         target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/incomplete_data/few_frames"
-        #         shutil.move(original, target)  
-        #     except:
-        #         print("Moving on to next dataset")
-        #     return
 
         while len(filenames) > 0:
             fail_counter += 1
@@ -123,8 +214,6 @@ class preprocessor():
                         endX = keypoints.loc[filename,' x_39']
                         beginY = keypoints.loc[filename,' y_38']
                         endY = keypoints.loc[filename,' y_40']
-                        # beginY = np.argmin(keypoints.loc[filename,' y_37'], keypoints.loc[filename,' y_38'])
-                        # endY = np.argmax(keypoints.loc[filename,' y_40'], keypoints.loc[filename,' y_41'])
 
                     if microXcomponent == "rightEye":
                         beginX = keypoints.loc[filename,' x_42']
@@ -158,42 +247,19 @@ class preprocessor():
 
 
                     # crop and resize image
+                    padding = 5
                     try:
-                        cropped_image = image[int(beginX):int(endX),int(beginY):int(endY)]
+                        cropped_image = image[int(beginY)-padding:int(endY)+padding,int(beginX)-padding:int(endX)+padding]
                         resized = cv2.resize(cropped_image,dim)
-                        cv2.imwrite("{}/{}/{}{}".format(microXoutput,microXcomponent, microXcomponent, filename), resized)
+                        # gray_image = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+                        cv2.imwrite("{}/{}/{}{}".format(microXoutput,microXcomponent, microXcomponent, filename), resized) #gray_image)
                         try:
                             filenames.remove(filename)
                         except:
                             continue
                     except:
-                        print("File may have errors")
-                        try:
-                            print("Duplication of previous frames in process")
-                            try:
-                                # try to see if its 2 digits
-                                value = int(filename[-6:-4])
-                                try:
-                                    #try to see if its 3 digits
-                                    value = int(filename[-7:-4])
-                                    previous_filename = filename[0:-7] + str(int(value) - 1) + ".jpg"
-                                except:
-                                    value = int(filename[-6:-4])
-                                    previous_filename = filename[0:-6] + str(int(value)-1) + ".jpg"
-                                    # print(previous_filename)
-                            except:
-                                value = int(filename[-5])
-                                if value == 0:
-                                    previous_filename = filename[0:-5] + str(value+1) + ".jpg"
-                                else:
-                                    previous_filename = filename[0:-5] + str(value-1) + ".jpg"
-
-                            previous_file_directory = "{}/{}/{}{}".format(microXoutput,microXcomponent, microXcomponent, previous_filename)
-                            shutil.copyfile(previous_file_directory, "{}/{}/{}{}".format(microXoutput,microXcomponent, microXcomponent, filename))
-                            filenames.remove(filename)
-                        except:
-                            continue
-
+                        self.frameDuplication(filename, filenames, microXoutput, microXcomponent)
+                
         # moving dataset to respective folders (completed / incomplete)
             if fail_counter >  (numberOfFiles * 6 + 300): 
                 print("____________________________FAILED DATASET MOVING FOLDER____________________________")
@@ -204,7 +270,7 @@ class preprocessor():
         
 
         try:
-            # if all microX folders have frames 0 - 10
+            # # if all microX folders have frames 0 - 10
             for microXcomponent in microX:
                 neededFiles  = []
                 for i in range(10):

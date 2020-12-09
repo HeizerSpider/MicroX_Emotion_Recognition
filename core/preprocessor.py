@@ -62,6 +62,7 @@ class preprocessor():
         '''
         Compiles the csv into the format to use for image cropping
         '''
+
         inputCSV = dataFolder + "/" + "raw_csv" + "/" + foldername + "_raw.csv"
         outputCSV = dataFolder + "/" + foldername + "/" + foldername + ".csv"
 
@@ -206,6 +207,7 @@ class preprocessor():
         lastFrame = keypoints.tail(1)["filename"].iloc[0]
         print(lastFrame)
         # print(keypoints)
+
         keypoints.set_index('filename', inplace=True)
         # print(keypoints)
         dim = (60, 60)

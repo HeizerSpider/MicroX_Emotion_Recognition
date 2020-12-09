@@ -204,8 +204,7 @@ class preprocessor():
                 break
         
         keypoints = pd.read_csv(CSV)
-        lastFrame = keypoints.tail(1)["filename"].iloc[0]
-        print(lastFrame)
+
         # print(keypoints)
 
         keypoints.set_index('filename', inplace=True)
@@ -342,6 +341,7 @@ class preprocessor():
             original = dataFolder + "/" + folderName
             target = "/Users/heizer/github_repos/MicroX_Emotion_Recognition/core/completed_split"
             print(original, target)
+
             shutil.move(original, target)       
         except:
             print("Moving on to next dataset")

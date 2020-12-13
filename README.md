@@ -8,12 +8,16 @@ Research paper can be found [here](https://github.com/HeizerSpider/MicroX_Emotio
 - BAUM-2
 
 ### Pre-Processing
-- for openface (works only in windows):
-download [this bianary](https://github.com/TadasBaltrusaitis/OpenFace/releases/download/OpenFace_2.2.0/OpenFace_v2.2.0_win_x64.zip) and move[this file](https://github.com/HeizerSpider/MicroX_Emotion_Recognition/blob/main/core/openface/automation.bat) into the OpenFace_2.2.0_win_x64 folder
+for openface (works only in windows):
 
-executing the download_models.ps1 PowerShell script(right click on the script and select Run with PowerShell)
-replace MYDIR with folder path of images and run the batch script
-results will appear in processed/ folder
+- download [this bianary](https://github.com/TadasBaltrusaitis/OpenFace/releases/download/OpenFace_2.2.0/OpenFace_v2.2.0_win_x64.zip) and move [this file](https://github.com/HeizerSpider/MicroX_Emotion_Recognition/blob/main/core/openface/automation.bat) into the OpenFace_2.2.0_win_x64 folder
+
+- execute the download_models.ps1 PowerShell script(right click on the script and select Run with PowerShell)
+
+- replace MYDIR with folder path of images and run the batch script by double clicking on the batch file
+
+- results will appear in processed/ folder when completed
+
 - Run the preprocessing script core/main.py with ```python main.py -d [dataset directory]```
 - Output Folder will have all microX images as well as main frame
 

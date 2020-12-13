@@ -25,10 +25,10 @@ Our model takes into consideration temporal images derived from frames in sequen
 <img src=res/model_overview.png width="300">
 
 ### Acknowledgements
-S. Zhalehpour, O. Onder, Z. Akhtar and C. E. Erdem, “BAUM-1: A Spontaneous Audio-Visual Face Database of Affective and Mental States”, IEEE Trans. on Affective Computing, DOI: 10.1109/TAFFC.2016.2553038.
-C. E. Erdem, C. Turan and Z. Aydın, “BAUM-2: A Multilingual Audio-Visual Affective Database”, Multimedia Tools and Applications, DOI: 10.1007/s11042-014-1986-2, 2014. Database web site: http://baum2.bahcesehir.edu.tr.
+- S. Zhalehpour, O. Onder, Z. Akhtar and C. E. Erdem, “BAUM-1: A Spontaneous Audio-Visual Face Database of Affective and Mental States”, IEEE Trans. on Affective Computing, DOI: 10.1109/TAFFC.2016.2553038.
+- C. E. Erdem, C. Turan and Z. Aydın, “BAUM-2: A Multilingual Audio-Visual Affective Database”, Multimedia Tools and Applications, DOI: 10.1007/s11042-014-1986-2, 2014. Database web site: http://baum2.bahcesehir.edu.tr.
 
 ### References
-[1] Convolutional experts constrained local model for facial landmark detection A. Zadeh, T. Baltrušaitis, and Louis-Philippe Morency. Computer Vision and Pattern Recognition Workshops, 2017
-[2] Zhalehpour, S.; Onder, O.; Akhtar, Z.; Erdem, C.E. BAUM-1: A Spontaneous Audio-Visual Face Database of Affective and Mental States. IEEE Trans. Affect. Comput. 2017, 8, 300–313.
-[3] Deep Temporal–Spatial Aggregation for Video-Based Facial Expression Recognition Xianzhang Pan , Wenping Guo , Xiaoying Guo, Wenshu Li, Junjie Xu and Jinzhao Wu, Symmetry 2019
+- [1] Convolutional experts constrained local model for facial landmark detection A. Zadeh, T. Baltrušaitis, and Louis-Philippe Morency. Computer Vision and Pattern Recognition Workshops, 2017
+- [2] Zhalehpour, S.; Onder, O.; Akhtar, Z.; Erdem, C.E. BAUM-1: A Spontaneous Audio-Visual Face Database of Affective and Mental States. IEEE Trans. Affect. Comput. 2017, 8, 300–313.
+- [3] Deep Temporal–Spatial Aggregation for Video-Based Facial Expression Recognition Xianzhang Pan , Wenping Guo , Xiaoying Guo, Wenshu Li, Junjie Xu and Jinzhao Wu, Symmetry 2019

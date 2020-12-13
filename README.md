@@ -17,10 +17,11 @@ results will appear in processed/ folder
 - Run the preprocessing script core/main.py with ```python main.py -d [dataset directory]```
 - Output Folder will have all microX images as well as main frame
 
+
+<img src=res/preprocessing.png width="300">
+
 ### Model Overview
 Our model takes into consideration temporal images derived from frames in sequence, with each input spanning 10 frames from a single video. Frames are extracted from videos using OpenCV with a frame rate of 30fps. For each of these frames, we further break them down into its individual micro expression components. Mainly, the right eye, left eye, nose and mouth. We also retain the original full-face frame. We then feed each of these components into a single ConvLSTM block. This is done so that each MicroX component will output a value in relation to time that is dependent only on the component itself (eg. The changes in the right eye relative to time will be given an output value that is independent of the other MicroX components).
-
-<img src=res/microX_overview.png width="300">
 
 <img src=res/model_overview.png width="300">
 

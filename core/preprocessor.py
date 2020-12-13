@@ -10,6 +10,8 @@ import shutil
 class preprocessor():
     def __init__(self):
         super().__init__()
+        
+    def splitter(self):
         for video in glob.glob('/content/drive/MyDrive/another dataset/test/test dataset/*/*.MOV'):
             vidcap = cv2.VideoCapture(video)
             success,image = vidcap.read()
@@ -25,7 +27,6 @@ class preprocessor():
 
             print(video)
             print ("Done!")
-
     # def countChecker(self,dataFolder):
     #     '''
     #     Transforms all files within a single directory

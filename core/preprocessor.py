@@ -10,6 +10,21 @@ import shutil
 class preprocessor():
     def __init__(self):
         super().__init__()
+        for video in glob.glob('/content/drive/MyDrive/another dataset/test/test dataset/*/*.MOV'):
+            vidcap = cv2.VideoCapture(video)
+            success,image = vidcap.read()
+            count = 0
+
+            while success:
+                newvideo = video.replace(".mp4", "")
+                cv2.imwrite(newvideo + "frame%d.jpg" % count, image)     # save frame as JPEG file      
+                success,image = vidcap.read()
+                #filename = video - '.avi' + "%d.jpg" % count;count+=1
+                filename = newvideo + "%d.jpg" % count
+                count += 1
+
+            print(video)
+            print ("Done!")
 
     # def countChecker(self,dataFolder):
     #     '''
